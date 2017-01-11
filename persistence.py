@@ -9,10 +9,11 @@ from functools import wraps
 
 import pandas as pd
 
-def persist_timeseries_to_file(file_name_cache=None):
+def persist_timeseries_to_file(filename_cache=None):
     """
-    Persits a Pandas DataFrame object into file in the form of a decorator.
-    It decorates a function that should return a pd.DataFrame.
+    Persits a Pandas DataFrame object returned by a function into cache file
+    using a decorator, so it decorates the function that returns the
+    pd.DataFrame.
 
     The function receives some extra parameters to be used by the
     decorator (and to make it explicit it is advised to add them in the
@@ -29,7 +30,7 @@ def persist_timeseries_to_file(file_name_cache=None):
 
     Parameters
     ----------
-    file_name_cache : String, default None
+    filename_cache : String, default None
         Name of cache file
 
     Returns
@@ -37,10 +38,10 @@ def persist_timeseries_to_file(file_name_cache=None):
     decorator : function
         Function that will persist data into cache file
     """
-    if file_name_cache is None:
+    if filename_cache is None:
         raise ValueError('A cache-file name is required.')
 
-    persistence_type = file_name_cache.split('.')[1]
+    persistence_type = filename_cache.split('.')[1]
 
     def decorator(original_func):
         """
@@ -64,7 +65,7 @@ def persist_timeseries_to_file(file_name_cache=None):
             if not os.path.exists(path_cache):
                 os.makedirs(path_cache)
 
-            path_file_cache = os.path.join(path_cache, file_name_cache)
+            path_file_cache = os.path.join(path_cache, filename_cache)
             print('Path cache:', path_file_cache)
 
             try:
