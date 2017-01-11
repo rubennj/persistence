@@ -83,21 +83,36 @@ def persist_timeseries_to_file(filename_cache=None):
             except (IOError, ValueError):
                 print('> Cache empty')
                 cache = pd.DataFrame()
-
-            if time.isin(cache.index).all() and not update_cache:
-                data = cache.loc[time]
-                print('> Cache with data')
-
+            
+            if not update_cache:
+                if time.isin(cache.index).all():
+                    data = cache.loc[time]
+                    print('> Cache with requested data')
+    
+                else:
+                    print('Lee estacion')
+                    data = original_func(time, **kwargs)
+                    if not data.empty:
+                        if persistence_type == 'csv':
+                            pd.concat([data, cache], join='inner').to_csv(path_file_cache)
+                        elif persistence_type == 'pickle':
+                            pd.concat([data, cache], join='inner').to_pickle(path_file_cache)
+                        elif persistence_type == 'json':
+                            pd.concat([data, cache], join='inner').to_json(path_file_cache)
+                        else:
+                            raise ValueError('Unknown type of persistence', persistence_type)
+                        
+                        print('> Updating cache with requested data...')
+                    else:
+                        print('> Cache not updated because requested data is empty')
             else:
                 data = original_func(time, **kwargs)
                 if persistence_type == 'csv':
-                    pd.concat([data, cache], join='inner').to_csv(path_file_cache)
+                    data.to_csv(path_file_cache)
                 elif persistence_type == 'pickle':
-                    pd.concat([data, cache], join='inner').to_pickle(path_file_cache)
+                    data.to_pickle(path_file_cache)
                 elif persistence_type == 'json':
-                    pd.concat([data, cache], join='inner').to_json(path_file_cache)
-                else:
-                    raise ValueError('Unknown type of persistence', persistence_type)
+                    data.to_json(path_file_cache)
 
                 print('> Saving data in cache...')
 
