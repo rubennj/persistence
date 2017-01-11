@@ -12,7 +12,7 @@ PATH_CACHE = '/home/ruben/persistence'
 UPDATE_CACHE = False
 
 # accepts '.csv', '.pickle' and '.json'
-@persist_timeseries_to_file(file_name_cache='example_cache.json')
+@persist_timeseries_to_file(filename_cache='example_cache.json')
 def test_func(time, enable_cache=True, path_cache=None, update_cache=False):
     """
     Test function of decorator persist_timeseries_to_file()
