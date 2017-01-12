@@ -66,7 +66,7 @@ def persist_timeseries_to_file(filename_cache=None):
                 os.makedirs(path_cache)
 
             path_file_cache = os.path.join(path_cache, filename_cache)
-            print('Path cache:', path_file_cache)
+            print('> Path cache:', path_file_cache)
 
             try:
                 if persistence_type == 'csv':
@@ -87,10 +87,10 @@ def persist_timeseries_to_file(filename_cache=None):
             if not update_cache:
                 if time.isin(cache.index).all():
                     data = cache.loc[time]
-                    print('> Cache with requested data')
+                    print('> Cache contains requested data')
     
                 else:
-                    print('Lee estacion')
+                    print('> Reading data source...')
                     data = original_func(time, **kwargs)
                     if not data.empty:
                         if persistence_type == 'csv':
