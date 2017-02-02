@@ -53,12 +53,13 @@ def persist_timeseries_to_file(filename_cache=None):
         # function will reflect the wrapper definition rather than the original
         # function definition, which is typically less than helpful.
         @wraps(original_func)
-        def new_func(time, enable_cache=False, path_cache=None, update_cache=False, **kwargs):
+        def new_func(time, enable_cache=False, path_cache=None,
+                     update_cache=False, verbose_cache=False, *args, **kwargs):
             """
             Decorated function
             """
             if not enable_cache:
-                return original_func(time, **kwargs)
+                return original_func(time, *args, **kwargs)
 
             if path_cache is None:
                 path_cache = os.path.abspath('')
@@ -66,7 +67,8 @@ def persist_timeseries_to_file(filename_cache=None):
                 os.makedirs(path_cache)
 
             path_file_cache = os.path.join(path_cache, filename_cache)
-            print('> Path cache:', path_file_cache)
+            if verbose_cache:
+                print('> Path cache:', path_file_cache)
 
             try:
                 if persistence_type == 'csv':
@@ -78,19 +80,23 @@ def persist_timeseries_to_file(filename_cache=None):
                 else:
                     raise ValueError('Unknown type of persistence', persistence_type)
 
-                print('> Reading cache...')
+                if verbose_cache:
+                    print('> Reading cache...')
 
             except (IOError, ValueError):
-                print('> Cache empty')
+                if verbose_cache:
+                    print('> Cache empty')
                 cache = pd.DataFrame()
             
             if not update_cache:
                 if time.isin(cache.index).all():
                     data = cache.loc[time]
-                    print('> Cache contains requested data')
+                    if verbose_cache:
+                        print('> Cache contains requested data')
     
                 else:
-                    print('> Reading data source...')
+                    if verbose_cache:
+                        print('> Reading data source...')
                     data = original_func(time, **kwargs)
                     if not data.empty:
                         if persistence_type == 'csv':
@@ -102,9 +108,11 @@ def persist_timeseries_to_file(filename_cache=None):
                         else:
                             raise ValueError('Unknown type of persistence', persistence_type)
                         
-                        print('> Updating cache with requested data...')
+                        if verbose_cache:
+                            print('> Updating cache with requested data...')
                     else:
-                        print('> Cache not updated because requested data is empty')
+                        if verbose_cache:
+                            print('> Cache not updated because requested data is empty')
             else:
                 data = original_func(time, **kwargs)
                 if persistence_type == 'csv':
@@ -114,7 +122,8 @@ def persist_timeseries_to_file(filename_cache=None):
                 elif persistence_type == 'json':
                     data.to_json(path_file_cache)
 
-                print('> Saving data in cache...')
+                if verbose_cache:
+                    print('> Saving data in cache...')
 
             return data
         return new_func
