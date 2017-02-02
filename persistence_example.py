@@ -44,5 +44,5 @@ test_func(time=pd.date_range(start='2016-12-01', periods=5),
 test_func(time=pd.date_range(start='2016-12-01', periods=3))
 
 test_func(time=pd.date_range(start='2016-12-01', periods=2),
-          enable_cache=ENABLE_CACHE, path_cache=PATH_CACHE)
+          enable_cache=ENABLE_CACHE, path_cache=PATH_CACHE, verbose_cache=True)
 
