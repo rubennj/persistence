@@ -34,8 +34,8 @@ def test_func(time, enable_cache=True, path_cache=None, update_cache=False):
     -------
     df : pd.DataFrame
         Timeseries dataframe with the corresponding data
-    """
     return pd.get_dummies(time).T
+    """
 
 test_func(time=pd.date_range(start='2016-12-01', periods=5),
           enable_cache=ENABLE_CACHE, update_cache=UPDATE_CACHE)
